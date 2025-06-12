@@ -41,3 +41,7 @@ export const login = async (req, res) => {
     maxAge: 1000 * 60 * 60
   }).send({ user: validUser, token })
 }
+
+export const logout = (req, res) => {
+  res.clearCookie('access_token').end()
+}
