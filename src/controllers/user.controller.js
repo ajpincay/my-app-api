@@ -1,13 +1,25 @@
+import cache from '../cache.js'
 import { prisma } from '../db.js'
 import { encryptPassword } from '../tools/secutity.js'
 
 export const getUsers = async (req, res) => {
   console.log(`Petición hecha por ${req.session.user}`)
+  const cacheKeyAllUsers = 'AllUsers'
+
+  if (cache.has(cacheKeyAllUsers)) {
+    console.log('Desde la caché')
+    const users = cache.get(cacheKeyAllUsers)
+    res.json(users)
+    return
+  }
+
+  console.log('Consulta desde la base de datos')
   const users = await prisma.user.findMany({
     omit: {
       password: true
     }
   })
+  cache.set(cacheKeyAllUsers, users)
   res.json(users)
 }
 
